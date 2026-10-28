@@ -557,12 +557,14 @@
           item: item || null,
           seconds: (seconds == null ? null : Math.round(seconds * 10) / 10),
           ref: ref || null });
-        if (navigator.sendBeacon) {
-          navigator.sendBeacon(ENDPOINT, new Blob([payload], { type: 'application/json' }));
-          return;
+        // fetch with keepalive + credentials omitted: the collector's CORS
+        // answers "*" which a credentialed beacon (sendBeacon) rejects,
+        // so beacons never arrive. keepalive survives pagehide like a
+        // beacon, without the credential trap. No fetch, no send.
+        if (window.fetch) {
+          fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: payload, keepalive: true, credentials: 'omit' }).catch(function () {});
         }
-        fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: payload, keepalive: true }).catch(function () {});
       } catch (e) {}
     }
     var mediaOpen = {};
