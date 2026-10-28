@@ -247,7 +247,23 @@
     <a class="yt-link" href="https://www.youtube.com/channel/UCRkuUgtDAL4XSU5jB40J_wA" target="_blank" rel="noopener">Open Foltyn on YouTube</a>
   </div>
 
-  <div class="page-foot"><a class="contact-pill" href="mailto:bradphee@gmail.com?subject=Roosty%27s%20Links">Contact Us</a></div>
+    <div class="yt-card" id="yt-card-lz">
+    <div class="yt-card-head"><div class="yt-card-label">Lourez</div><button class="yt-live-btn" id="yt-live-btn-lz" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-lz">Check if live</span></button></div>
+    <iframe id="yt-player-lz" src="https://www.youtube.com/embed/videoseries?list=UUG0_UM9EZOnQ2s-twP17Rvg&amp;enablejsapi=1" title="Lourez latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-lz" src="https://www.youtube.com/embed/live_stream?channel=UCG0_UM9EZOnQ2s-twP17Rvg&amp;enablejsapi=1" title="Lourez live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/@Official_DarkFlame" target="_blank" rel="noopener">Open Lourez on YouTube</a>
+  </div>
+
+  <div class="yt-card" id="yt-card-gp">
+    <div class="yt-card-head"><div class="yt-card-label">griffpatch</div><button class="yt-live-btn" id="yt-live-btn-gp" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-gp">Check if live</span></button></div>
+    <iframe id="yt-player-gp" src="https://www.youtube.com/embed/videoseries?list=UUawsI_mlmPA7Cfld-qZhBQA&amp;enablejsapi=1" title="griffpatch latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-gp" src="https://www.youtube.com/embed/live_stream?channel=UCawsI_mlmPA7Cfld-qZhBQA&amp;enablejsapi=1" title="griffpatch live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/@griffpatch" target="_blank" rel="noopener">Open griffpatch on YouTube</a>
+  </div>
+
+  <div class="hint">Tap a card to watch.</div>
+
+<div class="page-foot"><a class="contact-pill" href="mailto:bradphee@gmail.com?subject=Roosty%27s%20Links">Contact Us</a></div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
@@ -265,7 +281,7 @@
       latestPlayer: null, livePlayer: null
     };
   }
-  var cards = [makeCard('kz', 'Kazify'), makeCard('cy', 'Caylus'), makeCard('mz', 'Maze'), makeCard('ly', 'Lousayy'), makeCard('ft', 'Foltyn')];
+  var cards = [makeCard('kz', 'Kazify'), makeCard('cy', 'Caylus'), makeCard('mz', 'Maze'), makeCard('ly', 'Lousayy'), makeCard('ft', 'Foltyn'), makeCard('lz', 'Lourez'), makeCard('gp', 'griffpatch')];
   function pauseCard(c) {
     try { if (c.latestPlayer && c.latestPlayer.pauseVideo) c.latestPlayer.pauseVideo(); } catch (e) {}
     try { if (c.livePlayer && c.livePlayer.pauseVideo) c.livePlayer.pauseVideo(); } catch (e) {}
