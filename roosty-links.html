@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roosty's Links</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Roosty's Links">
+<meta name="description" content="Roosty's Links — Rhys's one-tap page: his favorite YouTube channels, all in one place.">
+<link rel="canonical" href="https://etashrhys.github.io/my10-pages/roosty-links.html">
+<meta property="og:title" content="Roosty's Links">
+<meta property="og:description" content="Rhys's one-tap page: his favorite YouTube channels, all in one place.">
+<meta property="og:url" content="https://etashrhys.github.io/my10-pages/roosty-links.html">
+<meta name="twitter:card" content="summary">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #e6e6e6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8b949e;
+    margin-bottom: 12px;
+  }
+  .status {
+    font-size: 0.85rem;
+    color: #58a6ff;
+    margin-bottom: 24px;
+    min-height: 1.2em;
+    text-align: center;
+  }
+  .station {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    font-family: inherit;
+    color: #fff;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .station:active { transform: scale(0.97); }
+  .station.playing {
+    border-color: #58a6ff;
+    box-shadow: 0 0 24px rgba(88, 166, 255, 0.25);
+  }
+  .station.audio { position: relative; overflow: hidden; }
+  .station.audio .viz {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .station.audio .freq, .station.audio .name {
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  .station .freq {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .station .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #3fb950;
+    display: none;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .station.playing .dot { display: inline-block; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+  .station .name {
+    font-size: 1rem;
+    color: #8b949e;
+    margin-top: 6px;
+  }
+  .hint {
+    margin-top: 24px;
+    font-size: 0.8rem;
+    color: #484f58;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .yt-card {
+    width: 100%;
+    max-width: 420px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+    cursor: default;
+    margin-bottom: 16px;
+  }
+  .yt-card:active { transform: none; }
+  .yt-card.playing {
+    border-color: #58a6ff;
+    box-shadow: 0 0 24px rgba(88, 166, 255, 0.25);
+  }
+  .yt-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 24px 12px;
+  }
+  .yt-card-label { font-size: 0.9rem; color: #8b949e; }
+  .yt-live-btn {
+    flex: none;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: #e11d48;
+    border: 1px solid #e11d48;
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .yt-live-btn.live-mode { background: #2f7de1; border-color: #2f7de1; }
+  .yt-live-btn.live-mode .yt-live-dot { display: none; }
+  .yt-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .yt-card iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
+  #yt-player-live-tg, #yt-player-live-nw { display: none; }
+  .yt-card .yt-link {
+    display: block;
+    text-align: center;
+    color: #58a6ff;
+    text-decoration: none;
+    padding: 12px 12px 16px;
+    font-size: 0.9rem;
+  }
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    width: 100%;
+    max-width: 420px;
+  }
+  .page-head h1 { margin-bottom: 0; }
+  .share-pill {
+    flex: none;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: #2f7de1;
+    border: 1px solid #2f7de1;
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .page-foot { margin-top: 16px; text-align: center; }
+  .contact-pill {
+    display: inline-block;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: #2f7de1;
+    border: 1px solid #2f7de1;
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+  <div class="page-head"><h1>Roosty's Links</h1><a class="share-pill" href="mailto:?subject=Roosty%27s%20Links&amp;body=Roosty%27s%20Links%0Ahttps%3A%2F%2Fetashrhys.github.io%2Fmy10-pages%2Froosty-links.html">Share</a></div>
+  <div class="status" id="status">Tap something to open</div>
+
+    <div class="yt-card" id="yt-card-kz">
+    <div class="yt-card-head"><div class="yt-card-label">Kazify</div><button class="yt-live-btn" id="yt-live-btn-kz" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-kz">Check if live</span></button></div>
+    <iframe id="yt-player-kz" src="https://www.youtube.com/embed/videoseries?list=UUd5BtgGTmEyqt_ntuGp-t8w&amp;enablejsapi=1" title="Kazify latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-kz" src="https://www.youtube.com/embed/live_stream?channel=UCd5BtgGTmEyqt_ntuGp-t8w&amp;enablejsapi=1" title="Kazify live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/@kazify" target="_blank" rel="noopener">Open Kazify on YouTube</a>
+  </div>
+
+  <div class="yt-card" id="yt-card-cy">
+    <div class="yt-card-head"><div class="yt-card-label">Caylus</div><button class="yt-live-btn" id="yt-live-btn-cy" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-cy">Check if live</span></button></div>
+    <iframe id="yt-player-cy" src="https://www.youtube.com/embed/videoseries?list=UUVAYy7_zddIx6USjXscV9Vg&amp;enablejsapi=1" title="Caylus latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-cy" src="https://www.youtube.com/embed/live_stream?channel=UCVAYy7_zddIx6USjXscV9Vg&amp;enablejsapi=1" title="Caylus live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/channel/UCVAYy7_zddIx6USjXscV9Vg" target="_blank" rel="noopener">Open Caylus on YouTube</a>
+  </div>
+
+  <div class="yt-card" id="yt-card-mz">
+    <div class="yt-card-head"><div class="yt-card-label">Maze</div><button class="yt-live-btn" id="yt-live-btn-mz" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-mz">Check if live</span></button></div>
+    <iframe id="yt-player-mz" src="https://www.youtube.com/embed/videoseries?list=UUR00GHnjTmZssgE3VfRAOgw&amp;enablejsapi=1" title="Maze latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-mz" src="https://www.youtube.com/embed/live_stream?channel=UCR00GHnjTmZssgE3VfRAOgw&amp;enablejsapi=1" title="Maze live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/@mazelabz" target="_blank" rel="noopener">Open Maze on YouTube</a>
+  </div>
+
+  <div class="yt-card" id="yt-card-ly">
+    <div class="yt-card-head"><div class="yt-card-label">Lousayy</div><button class="yt-live-btn" id="yt-live-btn-ly" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-ly">Check if live</span></button></div>
+    <iframe id="yt-player-ly" src="https://www.youtube.com/embed/videoseries?list=UUgOjLy9aHn5zyhcnY-pUY7w&amp;enablejsapi=1" title="Lousayy latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-ly" src="https://www.youtube.com/embed/live_stream?channel=UCgOjLy9aHn5zyhcnY-pUY7w&amp;enablejsapi=1" title="Lousayy live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/@itslouisayy" target="_blank" rel="noopener">Open Lousayy on YouTube</a>
+  </div>
+
+  <div class="yt-card" id="yt-card-ft">
+    <div class="yt-card-head"><div class="yt-card-label">Foltyn</div><button class="yt-live-btn" id="yt-live-btn-ft" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-ft">Check if live</span></button></div>
+    <iframe id="yt-player-ft" src="https://www.youtube.com/embed/videoseries?list=UURkuUgtDAL4XSU5jB40J_wA&amp;enablejsapi=1" title="Foltyn latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-ft" src="https://www.youtube.com/embed/live_stream?channel=UCRkuUgtDAL4XSU5jB40J_wA&amp;enablejsapi=1" title="Foltyn live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/channel/UCRkuUgtDAL4XSU5jB40J_wA" target="_blank" rel="noopener">Open Foltyn on YouTube</a>
+  </div>
+
+  <div class="page-foot"><a class="contact-pill" href="mailto:bradphee@gmail.com?subject=Roosty%27s%20Links">Contact Us</a></div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+(function () {
+  var status = document.getElementById('status');
+  function stopAudio() { try { if (window.jlStopAudio) window.jlStopAudio(); } catch (e) {} }
+  function makeCard(suffix, name) {
+    return {
+      suffix: suffix, name: name, liveMode: false,
+      card: document.getElementById('yt-card-' + suffix),
+      liveBtn: document.getElementById('yt-live-btn-' + suffix),
+      liveBtnText: document.getElementById('yt-live-btn-text-' + suffix),
+      mainFrame: document.getElementById('yt-player-' + suffix),
+      liveFrame: document.getElementById('yt-player-live-' + suffix),
+      latestPlayer: null, livePlayer: null
+    };
+  }
+  var cards = [makeCard('kz', 'Kazify'), makeCard('cy', 'Caylus'), makeCard('mz', 'Maze'), makeCard('ly', 'Lousayy'), makeCard('ft', 'Foltyn')];
+  function pauseCard(c) {
+    try { if (c.latestPlayer && c.latestPlayer.pauseVideo) c.latestPlayer.pauseVideo(); } catch (e) {}
+    try { if (c.livePlayer && c.livePlayer.pauseVideo) c.livePlayer.pauseVideo(); } catch (e) {}
+  }
+  function pauseAllVideos() { for (var i = 0; i < cards.length; i++) pauseCard(cards[i]); }
+  function showLatest(c) {
+    c.liveMode = false;
+    pauseCard(c);
+    if (c.liveFrame) c.liveFrame.style.display = 'none';
+    if (c.mainFrame) c.mainFrame.style.display = 'block';
+    if (c.liveBtn) c.liveBtn.classList.remove('live-mode');
+    if (c.liveBtnText) c.liveBtnText.textContent = 'Check if live';
+    if (c.card) c.card.classList.remove('playing');
+    status.textContent = 'Tap something to open';
+  }
+  function revertAllCards() { for (var i = 0; i < cards.length; i++) showLatest(cards[i]); }
+  window.jlPauseVideos = pauseAllVideos;
+  window.jlRevertCards = revertAllCards;
+  function showLive(c) {
+    for (var i = 0; i < cards.length; i++) { if (cards[i] !== c) showLatest(cards[i]); }
+    stopAudio();
+    c.liveMode = true;
+    try { if (c.latestPlayer && c.latestPlayer.pauseVideo) c.latestPlayer.pauseVideo(); } catch (e) {}
+    if (c.mainFrame) c.mainFrame.style.display = 'none';
+    if (c.liveFrame) c.liveFrame.style.display = 'block';
+    if (c.liveBtn) c.liveBtn.classList.add('live-mode');
+    if (c.liveBtnText) c.liveBtnText.textContent = 'Back to latest';
+    if (c.card) c.card.classList.remove('playing');
+    status.textContent = 'Live feed — tap play to watch';
+    try { if (c.livePlayer && c.livePlayer.playVideo) c.livePlayer.playVideo(); } catch (e) {}
+  }
+  for (var j = 0; j < cards.length; j++) {
+    (function (c) {
+      if (c.liveBtn) {
+        c.liveBtn.addEventListener('click', function (e) {
+          if (e && e.stopPropagation) e.stopPropagation();
+          if (!c.liveMode) { showLive(c); }
+          else { showLatest(c); }
+        });
+      }
+    })(cards[j]);
+  }
+  window.onYouTubeIframeAPIReady = function () {
+    try {
+      for (var k = 0; k < cards.length; k++) {
+        (function (c) {
+          var handler = function (e) {
+            if (e.data === YT.PlayerState.PLAYING) {
+              stopAudio();
+              for (var m = 0; m < cards.length; m++) { if (cards[m] !== c) showLatest(cards[m]); }
+              if (c.card) c.card.classList.add('playing');
+              status.textContent = 'Watching: ' + c.name;
+              try { if (window.__my10track) window.__my10track.mediaStart(c.name); } catch (err2) {}
+            } else {
+              if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+                try { if (window.__my10track) window.__my10track.mediaStop(c.name); } catch (err2) {}
+              }
+              if (c.card) { c.card.classList.remove('playing'); }
+            }
+          };
+          c.latestPlayer = new YT.Player('yt-player-' + c.suffix, { events: { 'onStateChange': handler } });
+          c.livePlayer = new YT.Player('yt-player-live-' + c.suffix, { events: { 'onStateChange': handler } });
+        })(cards[k]);
+      }
+    } catch (err) {}
+  };
+})();
+</script>
+
+<script>
+/* My 10 usage tracking: first-party, anonymous aggregate counts only.
+   Page slug is set per page at build time. Sends visit / click / share /
+   media-seconds / visible-seconds to Brad's own collector. Never blocks
+   the page: every call is guarded, failures are silent, and no listener
+   here calls preventDefault (mailto and link taps still fire normally). */
+(function () {
+  try {
+    var SLUG = 'roosty-links';
+    var ENDPOINT = 'https://ucii.sportgen-ai.com/track/event';
+    var session = null;
+    try {
+      session = sessionStorage.getItem('my10-track-session');
+      if (!session) {
+        session = 's' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        sessionStorage.setItem('my10-track-session', session);
+      }
+    } catch (e) { session = 's' + Math.random().toString(36).slice(2); }
+    function send(type, item, seconds, ref) {
+      try {
+        var payload = JSON.stringify({ type: type, page: SLUG, session: session,
+          item: item || null,
+          seconds: (seconds == null ? null : Math.round(seconds * 10) / 10),
+          ref: ref || null });
+        // fetch with keepalive + credentials omitted: the collector's CORS
+        // answers "*" which a credentialed beacon (sendBeacon) rejects,
+        // so beacons never arrive. keepalive survives pagehide like a
+        // beacon, without the credential trap. No fetch, no send.
+        if (window.fetch) {
+          fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: payload, keepalive: true, credentials: 'omit' }).catch(function () {});
+        }
+      } catch (e) {}
+    }
+    var mediaOpen = {};
+    var mediaPending = {};
+    var pagePending = 0;
+    var visibleSince = (document.visibilityState === 'visible') ? Date.now() : null;
+    function mediaStart(item) { try { if (!mediaOpen[item]) mediaOpen[item] = Date.now(); } catch (e) {} }
+    function mediaStop(item) {
+      try {
+        var t = mediaOpen[item];
+        if (t) { mediaPending[item] = (mediaPending[item] || 0) + (Date.now() - t) / 1000; delete mediaOpen[item]; }
+      } catch (e) {}
+    }
+    function flush() {
+      try {
+        var now = Date.now();
+        for (var item in mediaOpen) {
+          mediaPending[item] = (mediaPending[item] || 0) + (now - mediaOpen[item]) / 1000;
+          mediaOpen[item] = now;
+        }
+        for (var m in mediaPending) { if (mediaPending[m] > 0) send('media', m, mediaPending[m]); }
+        mediaPending = {};
+        if (visibleSince) { pagePending += (now - visibleSince) / 1000; visibleSince = now; }
+        if (pagePending > 0) send('page', null, pagePending);
+        pagePending = 0;
+      } catch (e) {}
+    }
+    function flushFinal() {
+      try {
+        var now = Date.now();
+        for (var item in mediaOpen) {
+          mediaPending[item] = (mediaPending[item] || 0) + (now - mediaOpen[item]) / 1000;
+        }
+        mediaOpen = {};
+        for (var m in mediaPending) { if (mediaPending[m] > 0) send('media', m, mediaPending[m]); }
+        if (visibleSince) { pagePending += (now - visibleSince) / 1000; }
+        if (pagePending > 0) send('page', null, pagePending);
+      } catch (e) {}
+    }
+    window.__my10track = { mediaStart: mediaStart, mediaStop: mediaStop };
+    try {
+      var refHost = null;
+      if (document.referrer) {
+        var a = document.createElement('a');
+        a.href = document.referrer;
+        refHost = a.hostname || null;
+      }
+      send('visit', null, null, refHost);
+    } catch (e) { try { send('visit', null, null, null); } catch (e2) {} }
+    function bindClick(sel, getItem, type) {
+      try {
+        var els = document.querySelectorAll(sel);
+        for (var i = 0; i < els.length; i++) {
+          (function (el) {
+            el.addEventListener('click', function () { try { send(type || 'click', getItem(el)); } catch (e) {} });
+          })(els[i]);
+        }
+      } catch (e) {}
+    }
+    bindClick('button.station.audio', function (el) { return el.getAttribute('data-name'); });
+    bindClick('a.station', function (el) {
+      var f = el.querySelector('.freq');
+      return f ? f.textContent.trim() : 'link';
+    });
+    bindClick('.yt-link', function (el) {
+      var card = el.closest('.yt-card');
+      var l = card ? card.querySelector('.yt-card-label') : null;
+      return l ? l.textContent.trim() : 'YouTube';
+    });
+    bindClick('.share-pill', function () { return 'Share'; }, 'share');
+    bindClick('.contact-pill', function (el) {
+      var h = el.getAttribute('href') || '';
+      return (h.indexOf('mailto:') === 0) ? 'Contact Us' : el.textContent.trim();
+    });
+    document.addEventListener('visibilitychange', function () {
+      try {
+        if (document.visibilityState === 'hidden') {
+          if (visibleSince) { pagePending += (Date.now() - visibleSince) / 1000; visibleSince = null; }
+        } else { visibleSince = Date.now(); }
+      } catch (e) {}
+    });
+    setInterval(flush, 60000);
+    window.addEventListener('pagehide', flushFinal);
+  } catch (e) {}
+})();
+</script>
+
+</body>
+</html>
