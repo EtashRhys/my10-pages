@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brad's Links</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Brad's Links">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #e6e6e6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8b949e;
+    margin-bottom: 12px;
+  }
+  .status {
+    font-size: 0.85rem;
+    color: #58a6ff;
+    margin-bottom: 24px;
+    min-height: 1.2em;
+    text-align: center;
+  }
+  .station {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    font-family: inherit;
+    color: #fff;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .station:active { transform: scale(0.97); }
+  .station.playing {
+    border-color: #58a6ff;
+    box-shadow: 0 0 24px rgba(88, 166, 255, 0.25);
+  }
+  .station.audio { position: relative; overflow: hidden; }
+  .station.audio .viz {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .station.audio .freq, .station.audio .name {
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  .station .freq {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .station .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #3fb950;
+    display: none;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .station.playing .dot { display: inline-block; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+  .station .name {
+    font-size: 1rem;
+    color: #8b949e;
+    margin-top: 6px;
+  }
+  .hint {
+    margin-top: 24px;
+    font-size: 0.8rem;
+    color: #484f58;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .yt-card {
+    width: 100%;
+    max-width: 420px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+    cursor: default;
+    margin-bottom: 16px;
+  }
+  .yt-card:active { transform: none; }
+  .yt-card.playing {
+    border-color: #58a6ff;
+    box-shadow: 0 0 24px rgba(88, 166, 255, 0.25);
+  }
+  .yt-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 24px 12px;
+  }
+  .yt-card-label { font-size: 0.9rem; color: #8b949e; }
+  .yt-live-btn {
+    flex: none;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: #e11d48;
+    border: 1px solid #e11d48;
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .yt-live-btn.live-mode { background: #2f7de1; border-color: #2f7de1; }
+  .yt-live-btn.live-mode .yt-live-dot { display: none; }
+  .yt-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .yt-card iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
+  #yt-player-live-tg, #yt-player-live-nw { display: none; }
+  .yt-card .yt-link {
+    display: block;
+    text-align: center;
+    color: #58a6ff;
+    text-decoration: none;
+    padding: 12px 12px 16px;
+    font-size: 0.9rem;
+  }
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    width: 100%;
+    max-width: 420px;
+  }
+  .page-head h1 { margin-bottom: 0; }
+  .share-pill {
+    flex: none;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: #2f7de1;
+    border: 1px solid #2f7de1;
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .page-foot { margin-top: 16px; text-align: center; }
+  .contact-pill {
+    display: inline-block;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: #2f7de1;
+    border: 1px solid #2f7de1;
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+  <div class="page-head"><h1>Brad's Links</h1><a class="share-pill" href="mailto:?subject=Brad%27s%20Links&amp;body=Brad%27s%20Links%0Ahttps%3A%2F%2Fetashrhys.github.io%2Fmy10-pages%2Fbrad-links.html">Share</a></div>
+  <div class="status" id="status">Tap something to open</div>
+
+  <button class="station audio" id="edge" data-stream="https://corus.leanstream.co/CFNYFM-MP3?args=web_02" data-name="102.1 The Edge">
+    <div class="freq"><span class="dot"></span>102.1 The Edge</div>
+    <div class="name">Toronto</div>
+  </button>
+
+  <div class="yt-card" id="yt-card-tg">
+    <div class="yt-card-head"><div class="yt-card-label">Typical Gamer</div><button class="yt-live-btn" id="yt-live-btn-tg" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-tg">Check if live</span></button></div>
+    <iframe id="yt-player-tg" src="https://www.youtube.com/embed/videoseries?list=UU2wKfjlioOCLP4xQMOWNcgg&amp;enablejsapi=1" title="Typical Gamer latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-tg" src="https://www.youtube.com/embed/live_stream?channel=UC2wKfjlioOCLP4xQMOWNcgg&amp;enablejsapi=1" title="Typical Gamer live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/@TypicalGamer" target="_blank" rel="noopener">Open Typical Gamer on YouTube</a>
+  </div>
+
+  <a class="station" href="https://www.lookmovie2.to/shows/view/0121955-south-park-1997" target="_blank" rel="noopener">
+    <div class="freq">South Park</div>
+    <div class="name">LookMovie2</div>
+  </a>
+
+  <button class="station audio" id="hot97" data-stream="https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTFMAAC_SC" data-name="HOT 97">
+    <div class="freq"><span class="dot"></span>HOT 97</div>
+    <div class="name">New York &middot; Hip-Hop</div>
+  </button>
+
+  <div class="yt-card" id="yt-card-nw">
+    <div class="yt-card-head"><div class="yt-card-label">NoahWPlays</div><button class="yt-live-btn" id="yt-live-btn-nw" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-nw">Check if live</span></button></div>
+    <iframe id="yt-player-nw" src="https://www.youtube.com/embed/videoseries?list=UUjqV5xlmzVWxZ7qCW1CBYow&amp;enablejsapi=1" title="NoahWPlays latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-nw" src="https://www.youtube.com/embed/live_stream?channel=UCjqV5xlmzVWxZ7qCW1CBYow&amp;enablejsapi=1" title="NoahWPlays live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/@NoahWPlays" target="_blank" rel="noopener">Open NoahWPlays on YouTube</a>
+  </div>
+
+  <div class="hint">Tap a station again to stop.</div>
+  <div class="page-foot"><a class="contact-pill" href="mailto:bradphee@gmail.com?subject=Brad%27s%20Links">Contact Us</a></div>
+
+<script>
+(function () {
+  var status = document.getElementById('status');
+  window.radioViz = { playing: false, analyser: null, mode: 'idle', current: null };
+  var instances = [];
+  var playingInstance = null;
+
+  function setViz(mode, playing, analyser) {
+    window.radioViz.mode = mode;
+    window.radioViz.playing = playing;
+    window.radioViz.analyser = (mode === 'sync') ? analyser : null;
+  }
+  function stopAllAudio() {
+    for (var i = 0; i < instances.length; i++) instances[i].stop();
+    playingInstance = null;
+    window.radioViz.current = null;
+    setViz('idle', false, null);
+  }
+  window.jlStopAudio = stopAllAudio;
+
+  function makeAudio(btnEl) {
+    var stream = btnEl.getAttribute('data-stream');
+    var displayName = btnEl.getAttribute('data-name');
+    var audio = new Audio();
+    audio.preload = 'none';
+    var audioCtx = null, analyser = null, audioElHasGraph = false;
+    var vizMode = 'idle';
+    var syncState = 'unknown';
+    var clickToken = 0;
+    var fellBackToken = -1;
+    var isCurrent = false;
+
+    function stop() {
+      try { audio.pause(); } catch (e) {}
+      audio.removeAttribute('src');
+      try { audio.load(); } catch (e) {}
+      btnEl.classList.remove('playing');
+      isCurrent = false;
+    }
+    function onStarted() {
+      btnEl.classList.add('playing');
+      status.textContent = 'Now playing: ' + displayName;
+    }
+    function startPlain() {
+      audio.removeAttribute('crossorigin');
+      audio.src = stream;
+      var p = audio.play();
+      if (p && p.then) {
+        p.then(function () { setViz('plain', true, null); onStarted(); }).catch(function () {
+          status.textContent = 'Could not start ' + displayName;
+          stopAllAudio();
+        });
+      } else { setViz('plain', true, null); onStarted(); }
+    }
+    function fallbackToPlain(token) {
+      if (token !== clickToken || token === fellBackToken) return;
+      fellBackToken = token;
+      syncState = 'plain';
+      try { audio.pause(); } catch (e) {}
+      audio.removeAttribute('src');
+      try { audio.load(); } catch (e) {}
+      audio = new Audio();
+      audio.preload = 'none';
+      audioElHasGraph = false;
+      bindError(audio);
+      status.textContent = 'Connecting to ' + displayName + '\u2026';
+      startPlain();
+    }
+    function bindError(el) {
+      el.addEventListener('error', function () {
+        if (!isCurrent) return;
+        if (vizMode === 'sync' && syncState !== 'sync') {
+          fallbackToPlain(clickToken);
+        } else {
+          status.textContent = 'Stream failed to load';
+          stopAllAudio();
+        }
+      });
+    }
+    bindError(audio);
+    function attemptSync() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!analyser) analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        if (!audioElHasGraph) {
+          var src = audioCtx.createMediaElementSource(audio);
+          src.connect(analyser);
+          analyser.connect(audioCtx.destination);
+          audioElHasGraph = true;
+        }
+        if (audioCtx.resume) audioCtx.resume();
+      } catch (e) {
+        syncState = 'plain';
+        startPlain();
+        return;
+      }
+      var token = clickToken;
+      audio.crossOrigin = 'anonymous';
+      audio.src = stream;
+      var p = audio.play();
+      if (p && p.then) {
+        p.then(function () {
+          syncState = 'sync';
+          vizMode = 'sync';
+          setViz('sync', true, analyser);
+          onStarted();
+        }).catch(function () {
+          if (syncState !== 'sync') fallbackToPlain(token);
+          else { status.textContent = 'Could not start ' + displayName; stopAllAudio(); }
+        });
+      } else {
+        syncState = 'sync';
+        vizMode = 'sync';
+        setViz('sync', true, analyser);
+        onStarted();
+      }
+    }
+    btnEl.addEventListener('click', function () {
+      if (window.jlPauseVideos) window.jlPauseVideos();
+      if (window.jlRevertCards) window.jlRevertCards();
+      if (isCurrent) { stopAllAudio(); status.textContent = 'Tap something to open'; return; }
+      stopAllAudio();
+      isCurrent = true;
+      playingInstance = inst;
+      window.radioViz.current = btnEl;
+      clickToken++;
+      status.textContent = 'Connecting to ' + displayName + '\u2026';
+      if (syncState === 'plain') { vizMode = 'plain'; setViz('plain', false, null); startPlain(); }
+      else { vizMode = 'sync'; setViz('sync', false, analyser); attemptSync(); }
+    });
+    var inst = { stop: stop };
+    return inst;
+  }
+
+  instances.push(makeAudio(document.getElementById('edge')));
+  instances.push(makeAudio(document.getElementById('hot97')));
+})();
+</script>
+
+<script>
+(function () {
+  function makeViz(btnEl, stops) {
+    var c = document.createElement('canvas');
+    c.className = 'viz';
+    btnEl.appendChild(c);
+    var ctx = c.getContext('2d');
+    var dpr = 1, w = 0, h = 0, cur = [];
+    function sizeIt() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = btnEl.clientWidth;
+      h = btnEl.clientHeight;
+      if (!w || !h) return;
+      c.width = Math.round(w * dpr);
+      c.height = Math.round(h * dpr);
+      cur = [];
+    }
+    sizeIt();
+    window.addEventListener('resize', sizeIt);
+    window.addEventListener('load', sizeIt);
+    var BAR_N = 20;
+    var freqData = null;
+    function draw() {
+      requestAnimationFrame(draw);
+      var viz = window.radioViz || {};
+      var t = performance.now() / 1000;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var active = (viz.current === btnEl && viz.playing);
+      if (!active) return;
+      var analyser = (viz.mode === 'sync') ? viz.analyser : null;
+      if (analyser) {
+        if (!freqData || freqData.length !== analyser.frequencyBinCount) freqData = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(freqData);
+      }
+      var step = w / BAR_N;
+      var bw = step * 0.62;
+      var grad = ctx.createLinearGradient(0, h, 0, 0);
+      grad.addColorStop(0, stops[0]);
+      grad.addColorStop(0.6, stops[1]);
+      grad.addColorStop(1, stops[2]);
+      ctx.fillStyle = grad;
+      for (var b = 0; b < BAR_N; b++) {
+        var target;
+        if (analyser && freqData) {
+          var bin = Math.floor(b * freqData.length / BAR_N);
+          target = 0.08 + (freqData[bin] / 255) * (h * 0.72);
+        } else {
+          var beat = Math.pow(Math.max(0, Math.sin(t * 2.1)), 3);
+          target = h * 0.08 + (0.5 + 0.5 * Math.sin(t * 2.6 + b * 0.55)) * (h * 0.28 + beat * h * 0.35);
+        }
+        var v = cur[b] || 0;
+        v += (target - v) * 0.35;
+        cur[b] = v;
+        var x = b * step + (step - bw) / 2;
+        var hh = Math.max(2, v);
+        ctx.fillRect(x, h - hh, bw, hh);
+      }
+    }
+    draw();
+  }
+  makeViz(document.getElementById('edge'), ['#0f2a4a', '#2f7de1', '#7cc4ff']);
+  makeViz(document.getElementById('hot97'), ['#2a1200', '#ff7a29', '#ffc27a']);
+})();
+</script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+(function () {
+  var status = document.getElementById('status');
+  function stopAudio() { try { if (window.jlStopAudio) window.jlStopAudio(); } catch (e) {} }
+  function makeCard(suffix, name) {
+    return {
+      suffix: suffix, name: name, liveMode: false,
+      card: document.getElementById('yt-card-' + suffix),
+      liveBtn: document.getElementById('yt-live-btn-' + suffix),
+      liveBtnText: document.getElementById('yt-live-btn-text-' + suffix),
+      mainFrame: document.getElementById('yt-player-' + suffix),
+      liveFrame: document.getElementById('yt-player-live-' + suffix),
+      latestPlayer: null, livePlayer: null
+    };
+  }
+  var cards = [makeCard('tg', 'Typical Gamer'), makeCard('nw', 'NoahWPlays')];
+  function pauseCard(c) {
+    try { if (c.latestPlayer && c.latestPlayer.pauseVideo) c.latestPlayer.pauseVideo(); } catch (e) {}
+    try { if (c.livePlayer && c.livePlayer.pauseVideo) c.livePlayer.pauseVideo(); } catch (e) {}
+  }
+  function pauseAllVideos() { for (var i = 0; i < cards.length; i++) pauseCard(cards[i]); }
+  function showLatest(c) {
+    c.liveMode = false;
+    pauseCard(c);
+    if (c.liveFrame) c.liveFrame.style.display = 'none';
+    if (c.mainFrame) c.mainFrame.style.display = 'block';
+    if (c.liveBtn) c.liveBtn.classList.remove('live-mode');
+    if (c.liveBtnText) c.liveBtnText.textContent = 'Check if live';
+    if (c.card) c.card.classList.remove('playing');
+    status.textContent = 'Tap something to open';
+  }
+  function revertAllCards() { for (var i = 0; i < cards.length; i++) showLatest(cards[i]); }
+  window.jlPauseVideos = pauseAllVideos;
+  window.jlRevertCards = revertAllCards;
+  function showLive(c) {
+    for (var i = 0; i < cards.length; i++) { if (cards[i] !== c) showLatest(cards[i]); }
+    stopAudio();
+    c.liveMode = true;
+    try { if (c.latestPlayer && c.latestPlayer.pauseVideo) c.latestPlayer.pauseVideo(); } catch (e) {}
+    if (c.mainFrame) c.mainFrame.style.display = 'none';
+    if (c.liveFrame) c.liveFrame.style.display = 'block';
+    if (c.liveBtn) c.liveBtn.classList.add('live-mode');
+    if (c.liveBtnText) c.liveBtnText.textContent = 'Back to latest';
+    if (c.card) c.card.classList.remove('playing');
+    status.textContent = 'Live feed — tap play to watch';
+    try { if (c.livePlayer && c.livePlayer.playVideo) c.livePlayer.playVideo(); } catch (e) {}
+  }
+  for (var j = 0; j < cards.length; j++) {
+    (function (c) {
+      if (c.liveBtn) {
+        c.liveBtn.addEventListener('click', function (e) {
+          if (e && e.stopPropagation) e.stopPropagation();
+          if (!c.liveMode) { showLive(c); }
+          else { showLatest(c); }
+        });
+      }
+    })(cards[j]);
+  }
+  window.onYouTubeIframeAPIReady = function () {
+    try {
+      for (var k = 0; k < cards.length; k++) {
+        (function (c) {
+          var handler = function (e) {
+            if (e.data === YT.PlayerState.PLAYING) {
+              stopAudio();
+              for (var m = 0; m < cards.length; m++) { if (cards[m] !== c) showLatest(cards[m]); }
+              if (c.card) c.card.classList.add('playing');
+              status.textContent = 'Watching: ' + c.name;
+            } else if (c.card) { c.card.classList.remove('playing'); }
+          };
+          c.latestPlayer = new YT.Player('yt-player-' + c.suffix, { events: { 'onStateChange': handler } });
+          c.livePlayer = new YT.Player('yt-player-live-' + c.suffix, { events: { 'onStateChange': handler } });
+        })(cards[k]);
+      }
+    } catch (err) {}
+  };
+})();
+</script>
+
+</body>
+</html>
