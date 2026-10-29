@@ -154,7 +154,7 @@
     animation: pulse 1.2s ease-in-out infinite;
   }
   .yt-card iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
-  #yt-player-live-tg, #yt-player-live-nw { display: none; }
+  #yt-player-live-jr, #yt-player-live-tg, #yt-player-live-nw { display: none; }
   .yt-card .yt-link {
     display: block;
     text-align: center;
@@ -205,6 +205,13 @@
 <body>
   <div class="page-head"><h1>Brad's Links</h1><a class="share-pill" href="mailto:?subject=Brad%27s%20Links&amp;body=Brad%27s%20Links%0Ahttps%3A%2F%2Fetashrhys.github.io%2Fmy10-pages%2Fbrad-links.html">Share</a></div>
   <div class="status" id="status">Tap something to open</div>
+
+  <div class="yt-card" id="yt-card-jr">
+    <div class="yt-card-head"><div class="yt-card-label">Joe Rogan Experience</div><button class="yt-live-btn" id="yt-live-btn-jr" type="button"><span class="yt-live-dot"></span><span id="yt-live-btn-text-jr">Check if live</span></button></div>
+    <iframe id="yt-player-jr" src="https://www.youtube.com/embed/videoseries?list=UUzQUP1qoWDoEbmsQxvdjxgQ&amp;enablejsapi=1" title="Joe Rogan Experience latest video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe id="yt-player-live-jr" src="https://www.youtube.com/embed/live_stream?channel=UCzQUP1qoWDoEbmsQxvdjxgQ&amp;enablejsapi=1" title="Joe Rogan Experience live feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <a class="yt-link" href="https://www.youtube.com/@joerogan" target="_blank" rel="noopener">Open Joe Rogan Experience on YouTube</a>
+  </div>
 
   <button class="station audio" id="edge" data-stream="https://corus.leanstream.co/CFNYFM-MP3?args=web_02" data-name="102.1 The Edge">
     <div class="freq"><span class="dot"></span>102.1 The Edge</div>
@@ -463,7 +470,7 @@
       latestPlayer: null, livePlayer: null
     };
   }
-  var cards = [makeCard('tg', 'Typical Gamer'), makeCard('nw', 'NoahWPlays')];
+  var cards = [makeCard('jr', 'Joe Rogan Experience'), makeCard('tg', 'Typical Gamer'), makeCard('nw', 'NoahWPlays')];
   function pauseCard(c) {
     try { if (c.latestPlayer && c.latestPlayer.pauseVideo) c.latestPlayer.pauseVideo(); } catch (e) {}
     try { if (c.livePlayer && c.livePlayer.pauseVideo) c.livePlayer.pauseVideo(); } catch (e) {}
